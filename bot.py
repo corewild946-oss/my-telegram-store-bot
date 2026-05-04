@@ -28,7 +28,7 @@ sheet = client.open_by_key(SHEET_ID).sheet1
 
 bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
 genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel('gemini-2.5-flash')
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 # Customer မှတ်တမ်း
 user_orders = {}

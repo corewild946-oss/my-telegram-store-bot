@@ -80,7 +80,7 @@ def handle_text(message):
             
         bot.reply_to(message, response_text)
     except Exception as e:
-        bot.reply_to(message, "ခဏလေးစောင့်ပေးပါဗျ။ အင်တာနက် အနည်းငယ် နှေးနေပါတယ်။")
+        bot.reply_to(message, f"AI ဘက်မှာ Error တက်နေပါတယ်ဗျ။ အကြောင်းရင်း -> {str(e)}")
 
 @bot.message_handler(content_types=['photo'])
 def handle_photo(message):

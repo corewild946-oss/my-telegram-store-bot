@@ -2,3 +2,5 @@ pyTelegramBotAPI
 google-generativeai
 Flask
 python-dotenv
+gspread
+oauth2client

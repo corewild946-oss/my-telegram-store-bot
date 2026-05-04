@@ -90,34 +90,57 @@ def admin_reply_to_user(message):
 def handle_text(message):
     if str(message.chat.id) == ADMIN_CHAT_ID and message.text.startswith('/'): return
         
-   try:
-            inv_context, _ = get_inventory_from_sheet()
-            system_prompt = f"""
-            မင်းက Software တွေရောင်းပေးတဲ့ Telegram Bot လေးပါ။ 
-            Admin ရဲ့ Username က {ADMIN_USERNAME} ပါ။
-            {inv_context}
-            
-            စည်းကမ်းချက်များ:
-            ၁။ သဘာဝကျကျ စကားပြောပါ။ အရေအတွက်များလျှင် ဈေးနှုန်းကို မြှောက်တွက်ပေးပါ။
-            ၂။ Customer ဘက်မှ အကောင့်ဝင်မရခြင်း၊ Error တက်ခြင်းများ ပြောလာပါက အဆုံးတွင် `[SUPPORT]` ဟု လျှို့ဝှက်ထည့်ပါ။
-            ၃။ ဝယ်ယူရန်သေချာပါက Wave & KPay (09772820924 - Nyein Chan Ko Ko) သို့ ငွေလွှဲပြေစာ တောင်းပါ။
-            ၄။ (အရေးကြီးဆုံး) ဝယ်ရန်သေချာပါက စာ၏အဆုံးတွင် `[ORDER: Product ID | အရေအတွက်]` ဟု အင်္ဂလိပ်ဂဏန်းသက်သက်ဖြင့်သာ မဖြစ်မနေ ထည့်ရေးပေးပါ။ 
-            
-            [နမူနာ စကားပြောပုံများ]
-            Customer: "Capcut Pro ၂ ခုလောက်ဝယ်ချင်တယ်"
-            Bot: "ဟုတ်ကဲ့၊ Capcut Pro ၂ ခုစာ ၃၀၀၀၀ ကျပ် ကျပါမယ်ခင်ဗျာ။ Wave & KPay (09772820924 - Nyein Chan Ko Ko) သို့ ငွေလွှဲပြီး ပြေစာလေး ပို့ပေးပါနော်။ [ORDER: Capcut_Shared | 2]"
-            """
-            
-            prompt = system_prompt + "\nCustomer စာ: " + message.text
-            
-            # AI ကို တိကျမှု အမြင့်ဆုံးဖြစ်အောင် Temperature 0.1 ဖြင့် ထိန်းချုပ်ခြင်း
-            response = model.generate_content(
-                prompt,
-                generation_config=genai.types.GenerationConfig(
-                    temperature=0.1
-                )
+    try:
+        inv_context, _ = get_inventory_from_sheet()
+        system_prompt = f"""
+        မင်းက Software တွေရောင်းပေးတဲ့ Telegram Bot လေးပါ။ 
+        Admin ရဲ့ Username က {ADMIN_USERNAME} ပါ။
+        {inv_context}
+        
+        စည်းကမ်းချက်များ:
+        ၁။ သဘာဝကျကျ စကားပြောပါ။ အရေအတွက်များလျှင် ဈေးနှုန်းကို မြှောက်တွက်ပေးပါ။
+        ၂။ Customer ဘက်မှ အကောင့်ဝင်မရခြင်း၊ Error တက်ခြင်းများ ပြောလာပါက အဆုံးတွင် `[SUPPORT]` ဟု လျှို့ဝှက်ထည့်ပါ။
+        ၃။ ဝယ်ယူရန်သေချာပါက Wave & Kpay ( 09795372119 - Mya Mya Moe ) သို့ ငွေလွှဲပြေစာ တောင်းပါ။ အကယ်၍ Customer မှ အခြား Payment များ (ဥပမာ AYA Pay, CB Pay) ဖြင့် ငွေလွှဲရန် မေးမြန်းလာပါက လက်ရှိတွင် Wave နှင့် Kpay သာ လက်ခံကြောင်း ယဉ်ကျေးစွာ သေချာရှင်းပြပါ။
+        ၄။ (အရေးကြီးဆုံး) ဝယ်ရန်သေချာပါက စာ၏အဆုံးတွင် `[ORDER: Product ID | အရေအတွက်]` ဟု အင်္ဂလိပ်ဂဏန်းသက်သက်ဖြင့်သာ မဖြစ်မနေ ထည့်ရေးပေးပါ။ 
+        
+        [နမူနာ စကားပြောပုံများ]
+        Customer: "Capcut Pro ၂ ခုလောက်ဝယ်ချင်တယ်"
+        Bot: "ဟုတ်ကဲ့၊ Capcut Pro ၂ ခုစာ ၃၀၀၀၀ ကျပ် ကျပါမယ်ခင်ဗျာ။ ငွေပေးချေရန်အတွက် Wave & Kpay ( 09795372119 - Mya Mya Moe ) သို့ ငွေလွှဲပြီး ပြေစာလေး ပို့ပေးပါနော်။ [ORDER: Capcut_Shared | 2]"
+        Customer: "AYA Pay နဲ့ လွှဲလို့ရလားဗျ"
+        Bot: "တောင်းပန်ပါတယ်ခင်ဗျာ။ လက်ရှိမှာတော့ ဆိုင်ကနေ Wave နဲ့ Kpay နှစ်မျိုးတည်းသာ လက်ခံသေးလို့ပါဗျ။ အဆင်ပြေမယ့် Wave သို့မဟုတ် Kpay ကနေ လွှဲပေးလို့ ရပါတယ်ခင်ဗျာ။"
+        """
+        
+        prompt = system_prompt + "\nCustomer စာ: " + message.text
+        
+        # AI ကို တိကျမှု အမြင့်ဆုံးဖြစ်အောင် Temperature 0.1 ဖြင့် ထိန်းချုပ်ခြင်း
+        response = model.generate_content(
+            prompt,
+            generation_config=genai.GenerationConfig(
+                temperature=0.1
             )
-            response_text = response.text
+        )
+        response_text = response.text
+        
+        # Order ထုတ်ယူခြင်း
+        match_order = re.search(r'\[ORDER:\s*(.*?)\s*\|\s*(\d+)\]', response_text)
+        if match_order:
+            product_key = match_order.group(1).strip()
+            qty = int(match_order.group(2).strip())
+            user_orders[message.chat.id] = {"product": product_key, "qty": qty}
+            response_text = re.sub(r'\[ORDER:\s*(.*?)\s*\|\s*(\d+)\]', '', response_text).strip()
+            
+        # Support Ticket
+        if "[SUPPORT]" in response_text:
+            response_text = response_text.replace("[SUPPORT]", "").strip()
+            bot.send_message(ADMIN_CHAT_ID, f"⚠️ **အကောင့်ပြဿနာ/Support:**\nCustomer ID: `{message.chat.id}`\nစာ: {message.text}\n\n*(ဤ Customer ထံသို့ ပြန်စာပို့ရန် အောက်ပါ Command ကို သုံးပါ)*\n`/reply {message.chat.id} `", parse_mode="Markdown")
+            
+        bot.reply_to(message, response_text)
+        
+    except Exception as e:
+        # AI Error တက်ပါက သင့်ထံ ချက်ချင်း အကြောင်းကြားမည့်အပိုင်း (Fail-safe)
+        error_msg = f"🔴 **Bot Error Alert:**\nCustomer (ID: `{message.chat.id}`) နှင့် စကားပြောနေစဉ် Error တက်သွားပါသည်။\n\n**Customer စာ:** {message.text}\n**အကြောင်းရင်း:** `{str(e)}`\n\n*(Customer ထံသို့ ကိုယ်တိုင်ဝင်ဖြေရန် အောက်ပါ Command ကို Copy ကူးပြီး ပို့ပါ)*\n`/reply {message.chat.id} ` "
+        bot.send_message(ADMIN_CHAT_ID, error_msg, parse_mode="Markdown")
+        bot.reply_to(message, "🙏 ဆာဗာ အနည်းငယ် ချို့ယွင်းနေလို့ပါ။ ကျွန်တော် Admin ကို တိုက်ရိုက် အကြောင်းကြားပေးထားပါတယ်။ ခဏလေးစောင့်ပေးပါခင်ဗျာ။ Admin မှ ဒီကနေတစ်ဆင့် ပြန်လည်ဖြေကြားပေးပါလိမ့်မယ်။")
 
         # Order ထုတ်ယူခြင်း
         match_order = re.search(r'\[ORDER:\s*(.*?)\s*\|\s*(\d+)\]', response_text)

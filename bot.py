@@ -90,25 +90,35 @@ def admin_reply_to_user(message):
 def handle_text(message):
     if str(message.chat.id) == ADMIN_CHAT_ID and message.text.startswith('/'): return
         
-    try:
-        inv_context, _ = get_inventory_from_sheet()
-        system_prompt = f"""
-        မင်းက Software တွေရောင်းပေးတဲ့ Telegram Bot လေးပါ။ 
-        Admin ရဲ့ Username က {ADMIN_USERNAME} ပါ။
-        {inv_context}
-        
-        စည်းကမ်းချက်များ:
-        ၁။ သဘာဝကျကျ စကားပြောပါ။ အရေအတွက်များလျှင် ဈေးနှုန်းကို မြှောက်တွက်ပေးပါ။
-        ၂။ Customer ဘက်မှ အကောင့်ဝင်မရခြင်း၊ Error တက်ခြင်းများ ပြောလာပါက အဆုံးတွင် `[SUPPORT]` ဟု လျှို့ဝှက်ထည့်ပါ။
-        ၃။ ဝယ်ယူရန်သေချာပါက KPay (09123456789 - U Ba) သို့ ငွေလွှဲပြေစာ တောင်းပါ။
-        ၄။ (အရေးကြီး) ဝယ်ရန်သေချာပါက စာ၏အဆုံးတွင် `[ORDER: Product ID | အရေအတွက်]` ဟု အင်္ဂလိပ်ဂဏန်းသက်သက်ဖြင့်သာ မဖြစ်မနေ ထည့်ရေးပေးပါ။ 
-        (ဥပမာ - [ORDER: Capcut_Shared | 2])
-        """
-        
-        prompt = system_prompt + "\nCustomer စာ: " + message.text
-        response = model.generate_content(prompt)
-        response_text = response.text
-        
+   try:
+            inv_context, _ = get_inventory_from_sheet()
+            system_prompt = f"""
+            မင်းက Software တွေရောင်းပေးတဲ့ Telegram Bot လေးပါ။ 
+            Admin ရဲ့ Username က {ADMIN_USERNAME} ပါ။
+            {inv_context}
+            
+            စည်းကမ်းချက်များ:
+            ၁။ သဘာဝကျကျ စကားပြောပါ။ အရေအတွက်များလျှင် ဈေးနှုန်းကို မြှောက်တွက်ပေးပါ။
+            ၂။ Customer ဘက်မှ အကောင့်ဝင်မရခြင်း၊ Error တက်ခြင်းများ ပြောလာပါက အဆုံးတွင် `[SUPPORT]` ဟု လျှို့ဝှက်ထည့်ပါ။
+            ၃။ ဝယ်ယူရန်သေချာပါက Wave & KPay (09772820924 - Nyein Chan Ko Ko) သို့ ငွေလွှဲပြေစာ တောင်းပါ။
+            ၄။ (အရေးကြီးဆုံး) ဝယ်ရန်သေချာပါက စာ၏အဆုံးတွင် `[ORDER: Product ID | အရေအတွက်]` ဟု အင်္ဂလိပ်ဂဏန်းသက်သက်ဖြင့်သာ မဖြစ်မနေ ထည့်ရေးပေးပါ။ 
+            
+            [နမူနာ စကားပြောပုံများ]
+            Customer: "Capcut Pro ၂ ခုလောက်ဝယ်ချင်တယ်"
+            Bot: "ဟုတ်ကဲ့၊ Capcut Pro ၂ ခုစာ ၃၀၀၀၀ ကျပ် ကျပါမယ်ခင်ဗျာ။ Wave & KPay (09772820924 - Nyein Chan Ko Ko) သို့ ငွေလွှဲပြီး ပြေစာလေး ပို့ပေးပါနော်။ [ORDER: Capcut_Shared | 2]"
+            """
+            
+            prompt = system_prompt + "\nCustomer စာ: " + message.text
+            
+            # AI ကို တိကျမှု အမြင့်ဆုံးဖြစ်အောင် Temperature 0.1 ဖြင့် ထိန်းချုပ်ခြင်း
+            response = model.generate_content(
+                prompt,
+                generation_config=genai.types.GenerationConfig(
+                    temperature=0.1
+                )
+            )
+            response_text = response.text
+
         # Order ထုတ်ယူခြင်း
         match_order = re.search(r'\[ORDER:\s*(.*?)\s*\|\s*(\d+)\]', response_text)
         if match_order:

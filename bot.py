@@ -5,11 +5,15 @@ from flask import Flask
 import threading
 import os
 import re
+from dotenv import load_dotenv
+
+# .env ဖိုင်ထဲက Key တွေကို လှမ်းခေါ်ခြင်း
+load_dotenv()
 
 # --- (၁) သင့်ရဲ့ အချက်အလက်များ ---
-TELEGRAM_BOT_TOKEN = "8782930465:AAGvPwcenVM6vQ2qTBh7f4hgjCex9hkfkL0"
-GEMINI_API_KEY = "AIzaSyDiliSEq0iK__zWTs___KyZU2WW2_R3034"
-ADMIN_CHAT_ID = "1590595729" 
+TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+ADMIN_CHAT_ID = os.environ.get("ADMIN_CHAT_ID")
 
 # --- (၂) ဒီနေရာမှာ မိမိရောင်းမည့် ပစ္စည်းနှင့် "အကောင့်များ (Accounts)" ကို ထည့်ပါ ---
 INVENTORY = {
